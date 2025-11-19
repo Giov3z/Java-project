@@ -1,12 +1,18 @@
 package it.university.repository;
 
 import it.university.model.Course;
-import java.util.*;
+import it.university.repository.impl.AbstractInMemoryRepository;
 
-public class CourseRepository {
-    private Map<Integer, Course> data = new HashMap<>();
+import java.util.Optional;
 
-    public void save(Course c) { data.put(c.getId(), c); }
-    public Course findById(int id) { return data.get(id); }
-    public List<Course> findAll() { return new ArrayList<>(data.values()); }
+public class CourseRepository extends AbstractInMemoryRepository<Integer, Course> {
+    @Override
+    protected Integer extractId(Course entity) {
+        return entity.getId();
+    }
+
+    @Override
+    public Optional<Course> findById(Integer id) {
+        return super.findById(id);
+    }
 }

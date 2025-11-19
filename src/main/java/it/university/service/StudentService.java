@@ -1,17 +1,20 @@
 package it.university.service;
 
 import it.university.model.Student;
-import it.university.repository.StudentRepository;
-import java.util.List;
+import it.university.repository.Repository;
 
-public class StudentService {
-    private StudentRepository repository = new StudentRepository();
+public class StudentService extends AbstractService<Integer, Student> {
 
-    public void registerStudent(Student s) { repository.save(s); }
-    public List<Student> list() { 
-        if (repository.findAll().isEmpty()){
-            System.out.println("Nessuno studente");
-        }
-        return repository.findAll(); 
+    public StudentService(Repository<Integer, Student> repository) {
+        super(repository);
+    }
+
+    public void registerStudent(Student student) {
+        save(student);
+    }
+
+    @Override
+    protected String emptyMessage() {
+        return "Nessuno studente presente";
     }
 }

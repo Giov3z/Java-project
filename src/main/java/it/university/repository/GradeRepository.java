@@ -1,11 +1,11 @@
 package it.university.repository;
 
 import it.university.model.Grade;
-import java.util.*;
+import it.university.repository.impl.AbstractInMemoryRepository;
 
-public class GradeRepository {
-    private List<Grade> grades = new ArrayList<>();
-
-    public void save(Grade g) { grades.add(g); }
-    public List<Grade> findAll() { return grades; }
+public class GradeRepository extends AbstractInMemoryRepository<String, Grade> {
+    @Override
+    protected String extractId(Grade entity) {
+        return entity.getStudentId() + ":" + entity.getCourseId();
+    }
 }

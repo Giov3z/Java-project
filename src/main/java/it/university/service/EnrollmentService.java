@@ -1,18 +1,35 @@
 package it.university.service;
 
 import it.university.model.Enrollment;
-import it.university.repository.EnrollmentRepository;
+import it.university.repository.impl.EnrollmentRepositoryImpl;
+import it.university.repository.Repository;
+
 import java.util.List;
 
-public class EnrollmentService {
-    private EnrollmentRepository repo = new EnrollmentRepository();
+public class EnrollmentService extends AbstractService<String, Enrollment> {
 
-    public void enrollStudent(Enrollment e) { repo.save(e); }
-    public List<Enrollment> list() { 
-        if (repo.findAll().isEmpty()){
-            System.out.println("Nessuna iscrizione trovata");
-        }
-        return repo.findAll(); 
+    private final EnrollmentRepositoryImpl enrollmentRepository;
+
+    public EnrollmentService(Repository<String, Enrollment> repository, EnrollmentRepositoryImpl enrollmentRepository) {
+        super(repository);
+        this.enrollmentRepository = enrollmentRepository;
     }
-    public boolean isEnrolled(int studentId, int courseId) { return repo.exists(studentId, courseId); }
+
+    public void enrollStudent(Enrollment enrollment) {
+        save(enrollment);
+    }
+
+    @Override
+    public List<Enrollment> list() {
+        return super.list();
+    }
+
+    public boolean isEnrolled(int studentId, int courseId) {
+        return enrollmentRepository.exists(studentId, courseId);
+    }
+
+    @Override
+    protected String emptyMessage() {
+        return "Nessuna iscrizione presente";
+    }
 }

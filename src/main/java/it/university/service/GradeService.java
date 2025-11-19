@@ -1,17 +1,20 @@
 package it.university.service;
 
 import it.university.model.Grade;
-import it.university.repository.GradeRepository;
-import java.util.List;
+import it.university.repository.Repository;
 
-public class GradeService {
-    private GradeRepository repo = new GradeRepository();
+public class GradeService extends AbstractService<String, Grade> {
 
-    public void add(Grade g) { repo.save(g); }
-    public List<Grade> list() {
-        if (repo.findAll().isEmpty()){
-            System.out.println("Nessun voto registrato");
-        } 
-        return repo.findAll(); 
+    public GradeService(Repository<String, Grade> repository) {
+        super(repository);
+    }
+
+    public void add(Grade grade) {
+        save(grade);
+    }
+
+    @Override
+    protected String emptyMessage() {
+        return "Nessun voto presente";
     }
 }

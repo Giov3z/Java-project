@@ -1,12 +1,14 @@
 package it.university.repository;
 
 import it.university.model.Student;
-import java.util.*;
+import it.university.repository.impl.AbstractInMemoryRepository;
 
-public class StudentRepository {
-    private Map<Integer, Student> students = new HashMap<>();
-
-    public void save(Student s) { students.put(s.getId(), s); }
-    public Student findById(int id) { return students.get(id); }
-    public List<Student> findAll() { return new ArrayList<>(students.values()); }
+/**
+ * Repository in-memory per Student che sfrutta l'implementazione generica.
+ */
+public class StudentRepository extends AbstractInMemoryRepository<Integer, Student> {
+    @Override
+    protected Integer extractId(Student entity) {
+        return entity.getId();
+    }
 }
