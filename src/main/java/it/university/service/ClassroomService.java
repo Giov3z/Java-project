@@ -1,17 +1,20 @@
 package it.university.service;
 
 import it.university.model.Classroom;
-import it.university.repository.ClassroomRepository;
-import java.util.List;
+import it.university.repository.Repository;
 
-public class ClassroomService {
-    private ClassroomRepository repo = new ClassroomRepository();
+public class ClassroomService extends AbstractService<String, Classroom> {
 
-    public void add(Classroom c) { repo.save(c); }
-    public List<Classroom> list() { 
-        if (repo.findAll().isEmpty()){
-            System.out.println("Nessuna aula trovata");
-        }
-        return repo.findAll(); 
+    public ClassroomService(Repository<String, Classroom> repository) {
+        super(repository);
+    }
+
+    public void add(Classroom classroom) {
+        save(classroom);
+    }
+
+    @Override
+    protected String emptyMessage() {
+        return "Nessuna aula presente";
     }
 }

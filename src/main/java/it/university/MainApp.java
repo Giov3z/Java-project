@@ -1,74 +1,81 @@
 package it.university;
 
+import it.university.common.EmptyResultException;
 import it.university.model.*;
+import it.university.repository.*;
+import it.university.repository.impl.EnrollmentRepositoryImpl;
 import it.university.service.*;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 public class MainApp {
     public static void main(String[] args) {
-        StudentService studentService = new StudentService();
-        ProfessorService professorService = new ProfessorService();
-        CourseService courseService = new CourseService();
-        ClassroomService classroomService = new ClassroomService();
-        EnrollmentService enrollmentService = new EnrollmentService();
-        GradeService gradeService = new GradeService();
-        
-        System.out.println("Studenti:");
-        studentService.list().forEach(System.out::println);
+        StudentRepository studentRepository = new StudentRepository();
+        ProfessorRepository professorRepository = new ProfessorRepository();
+        CourseRepository courseRepository = new CourseRepository();
+        ClassroomRepository classroomRepository = new ClassroomRepository();
+        EnrollmentRepositoryImpl enrollmentRepository = new EnrollmentRepositoryImpl();
+        GradeRepository gradeRepository = new GradeRepository();
+
+        StudentService studentService = new StudentService(studentRepository);
+        ProfessorService professorService = new ProfessorService(professorRepository);
+        CourseService courseService = new CourseService(courseRepository, courseRepository);
+        ClassroomService classroomService = new ClassroomService(classroomRepository);
+        EnrollmentService enrollmentService = new EnrollmentService(enrollmentRepository, enrollmentRepository);
+        GradeService gradeService = new GradeService(gradeRepository);
+
+        printSection("Studenti", studentService::list);
 
         studentService.registerStudent(new Student(1, "Alice", "alice@mail.com"));
         studentService.registerStudent(new Student(2, "Bob", "bob@mail.com"));
-        
-        System.out.println("Studenti:");
-        studentService.list().forEach(System.out::println);
 
-        System.out.println("\nProfessori:");
-        professorService.list().forEach(System.out::println);
+        printSection("Studenti", studentService::list);
+
+        printSection("Professori", professorService::list);
 
         professorService.add(new Professor(1, "Dr. Rossi", "Informatica"));
-        System.out.println("\nProfessori:");
-        professorService.list().forEach(System.out::println);
+        printSection("Professori", professorService::list);
 
-
-        System.out.println("\nCorsi:");
-        courseService.list().forEach(System.out::println);
+        printSection("Corsi", courseService::list);
 
         courseService.createCourse(new Course(1, "Programmazione", 9));
         courseService.createCourse(new Course(2, "Basi di Dati", 6));
-        courseService.assignProfessor(courseService.list().get(0), 1);
+        courseService.assignProfessor(1, 1);
 
-        System.out.println("\nCorsi:");
-        courseService.list().forEach(System.out::println);
+        printSection("Corsi", courseService::list);
 
-        System.out.println("\nAule:");
-        classroomService.list().forEach(System.out::println);
-
+        printSection("Aule", classroomService::list);
 
         classroomService.add(new Classroom("A101", 30));
 
-        System.out.println("\nAule:");
-        classroomService.list().forEach(System.out::println);
+        printSection("Aule", classroomService::list);
 
-        System.out.println("\nIscrizioni:");
-        enrollmentService.list().forEach(System.out::println);
+        printSection("Iscrizioni", enrollmentService::list);
 
         enrollmentService.enrollStudent(new Enrollment(1,1));
         enrollmentService.enrollStudent(new Enrollment(2,1));
 
-        System.out.println("\nIscrizioni:");
-        enrollmentService.list().forEach(System.out::println);
+        printSection("Iscrizioni", enrollmentService::list);
 
-
-
-        System.out.println("\nVoti:");
-        gradeService.list().forEach(System.out::println);
+        printSection("Voti", gradeService::list);
 
         gradeService.add(new Grade(1,1,28));
 
-        System.out.println("\nVoti:");
-        gradeService.list().forEach(System.out::println);
+        printSection("Voti", gradeService::list);
+    }
 
+    private static <T> void printSection(String title, SupplierWithEmptyException<List<T>> supplier) {
+        System.out.println("\n" + title + ":");
+        try {
+            supplier.get().forEach(System.out::println);
+        } catch (EmptyResultException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
-        
-
+    @FunctionalInterface
+    private interface SupplierWithEmptyException<T> {
+        T get() throws EmptyResultException;
     }
 }
